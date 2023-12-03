@@ -1,29 +1,32 @@
-import React from 'react'
-//mxhoGfdCgLW7UJjm
+import mongoose from 'mongoose';
+//1OSTgWBwJFqxpW6C
+
+let isConnected = false; // track the connection
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://litonahmed066:mxhoGfdCgLW7UJjm@cluster0.aetdgwv.mongodb.net/?retryWrites=true&w=majority";
+export const connectToDB = async () => {
+    mongoose.set('strictQuery', true);
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
+    if (isConnected) {
+        console.log('MongoDB is already connected');
+        return;
+    }
+
+
+    try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            dbName: "book_prompt",
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+
+
+        isConnected = true;
+
+
+        console.log('MongoDB connected')
+    } catch (error) {
+        console.log(error);
+    }
 }
-run().catch(console.dir);
